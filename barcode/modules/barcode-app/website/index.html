@@ -271,8 +271,9 @@
 
     // Save configuration
     function saveConfig() {
-            // Immediate UI feedback
-            showStatus('authStatus', 'Saving configuration...', 'info');
+        // Immediate UI feedback
+        showStatus('authStatus', 'Saving configuration...', 'info');
+        try { alert('Saving configuration...'); } catch(e) { /* ignore */ }
 
             // Read and trim values from the form
             config = {
@@ -296,12 +297,15 @@
                 console.log('initializeCognito returned:', ok);
                 if (ok) {
                     showStatus('authStatus', 'Configuration saved and Cognito initialized successfully!', 'success');
+                    try { alert('Configuration saved and Cognito initialized successfully!'); } catch(e) { /* ignore */ }
                 } else {
                     showStatus('authStatus', 'Configuration saved but Cognito initialization failed. See console for details.', 'error');
+                    try { alert('Configuration saved but Cognito initialization failed. See console for details.'); } catch(e) { /* ignore */ }
                 }
             } catch (err) {
                 console.error('Failed to save config:', err);
                 showStatus('authStatus', 'Failed to save configuration: ' + (err && err.message ? err.message : err), 'error');
+                try { alert('Failed to save configuration: ' + (err && err.message ? err.message : err)); } catch(e) { /* ignore */ }
             }
         }
 
