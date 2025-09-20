@@ -263,13 +263,14 @@
                 document.getElementById('apiUrl').value = config.apiUrl || '';
                 
                 if (config.userPoolId && config.clientId) {
-                    initializeCognito();
+                    const ok = initializeCognito();
+                    if (!ok) showStatus('authStatus', 'Loaded config but failed to initialize Cognito. Please re-check values.', 'error');
                 }
             }
         }
 
-        // Save configuration
-        function saveConfig() {
+    // Save configuration
+    function saveConfig() {
             // Read and trim values from the form
             config = {
                 userPoolId: document.getElementById('userPoolId').value.trim(),
@@ -287,8 +288,12 @@
             // Persist config and initialize Cognito
             try {
                 localStorage.setItem('cognitoConfig', JSON.stringify(config));
-                initializeCognito();
-                showStatus('authStatus', 'Configuration saved successfully!', 'success');
+                const ok = initializeCognito();
+                if (ok) {
+                    showStatus('authStatus', 'Configuration saved and Cognito initialized successfully!', 'success');
+                } else {
+                    showStatus('authStatus', 'Configuration saved but Cognito initialization failed. See console for details.', 'error');
+                }
             } catch (err) {
                 console.error('Failed to save config:', err);
                 showStatus('authStatus', 'Failed to save configuration: ' + err.message, 'error');
@@ -300,7 +305,7 @@
             try {
                 if (!config.userPoolId || !config.clientId) {
                     showStatus('authStatus', 'Please configure User Pool ID and Client ID first', 'error');
-                    return;
+                    return false;
                 }
 
                 AWS.config.region = config.region || 'us-east-1';
@@ -326,9 +331,11 @@
                         }
                     });
                 }
+                return true;
             } catch (err) {
                 console.error('Failed to initialize Cognito:', err);
                 showStatus('authStatus', 'Failed to initialize Cognito: ' + (err.message || err), 'error');
+                return false;
             }
         }
 
